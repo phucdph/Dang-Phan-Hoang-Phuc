@@ -42,7 +42,7 @@ pnpm dev
 
 - Linter: `eslint`
 - Code Formatter: `prettier`
-- Unit test: Covered same logic and UI with `vitest`
+- Unit test: Covered some logic and UI with `vitest`
 
 ![image](https://i.ibb.co/17HYQsR/Screenshot-2024-07-05-at-22-34-21.png)
 
