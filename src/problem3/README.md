@@ -8,7 +8,7 @@
 - `index` should not be the key of `WalletRow`.
 - `children` props was not used. So the type of component should not be `React.FC`.
 - Assume `balances` and `prices` was received from API. Not sure about the availablity of it. So should use optional chaining.
-
+- Redundant type of some functions.
 
 ## Original Code
 
@@ -117,9 +117,8 @@ const blockchainPriorityMap = {
 };
 
 // Move getPriority to outside the component
-const getPriority = (blockchain: string) => {
-  return blockchainPriority[blockchain] || -99;
-};
+const getPriority = (blockchain: string) =>
+  blockchainPriority[blockchain] || -99;
 
 const WalletPage = (props: BoxProps) => {
   const balances = useWalletBalances(); // assume that useWalletBalances already return correct type: WalletBalance[]
@@ -142,25 +141,28 @@ const WalletPage = (props: BoxProps) => {
     [balances]
   );
 
-  // No need to define types for balance here because TS already infer it
-  const rows = sortedBalances?.map((balance) => {
-    // These calulcate is lightweight so it can be place here. If it is heavy, move it to WalletRow and memorize it
-    // Not sure prices have that currency or not so should have fallback value here.
-    const usdValue = (prices?.[balance.currency] ?? 0) * balance.amount;
-    const formattedAmount = balance.amount.toFixed();
-    return (
-      // WalletRow should be a pure component and memorized.
-      <WalletRow
-        // Combine blockchain and currency to create a key. Because there might be duplicated.
-        key={`${balance.blockchain} - ${balance.currency}`}
-        className={classes.row}
-        amount={balance.amount}
-        usdValue={usdValue}
-        formattedAmount={formattedAmount}
-      />
-    );
-  });
-
-  return <div {...props}>{rows}</div>;
+  return (
+    <div {...props}>
+      {/* This node is not complex. So it not nessesary for delare it above. */}
+      {/* No need to define types for balance here because TS already infer it */}
+      {sortedBalances?.map((balance) => {
+        // These calulcate is lightweight so it can be place here. If it is heavy, move it to WalletRow and memorize it
+        // Not sure prices have that currency or not so should have fallback value here.
+        const usdValue = (prices?.[balance.currency] ?? 0) * balance.amount;
+        const formattedAmount = balance.amount.toFixed();
+        return (
+          // WalletRow should be a pure component and memorized.
+          <WalletRow
+            // Combine blockchain and currency to create a key. Because there might be duplicated.
+            key={`${balance.blockchain} - ${balance.currency}`}
+            className={classes.row}
+            amount={balance.amount}
+            usdValue={usdValue}
+            formattedAmount={formattedAmount}
+          />
+        );
+      })}
+    </div>
+  );
 };
 ```
